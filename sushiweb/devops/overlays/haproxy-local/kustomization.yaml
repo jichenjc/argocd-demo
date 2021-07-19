@@ -1,0 +1,7 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- route.yaml
+- smee-dc.yaml
+resources:
+- rolebinding.yaml

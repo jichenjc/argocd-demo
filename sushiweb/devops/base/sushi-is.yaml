@@ -1,0 +1,38 @@
+apiVersion: v1
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: sushiweb
+    name: alpine
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: quay.io/schabrolles/alpine
+      from:
+        kind: DockerImage
+        name: quay.io/schabrolles/alpine
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: sushiweb
+    name: sushiweb
+  spec:
+    lookupPolicy:
+      local: false
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "acmeair.fullname" . }}-auth-service
+  labels:
+    {{- include "acmeair.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      name: {{ include "acmeair.fullname" . }}-auth
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        name: {{ include "acmeair.fullname" . }}-auth
+        app: auth
+        app.kubernetes.io/name: auth
+        app.kubernetes.io/version: {{ .Values.acmeairAuth.image.tag }}
+        version: {{ .Values.acmeairAuth.image.tag }}
+        app.kubernetes.io/part-of: {{ include "acmeair.fullname" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "acmeair.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: acmeair-authservice-java
+          env:
+            - name: USERNAME
+              value: admin
+            - name: PASSWORD
+              value: password
+            - name: ACMEAIR_STACKAA_CUSTOMER_URL
+              value: http://{{ include "acmeair.fullname" . }}-customer-service:9080/customer
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.acmeairAuth.image.repository }}:{{ .Values.acmeairAuth.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.acmeairAuth.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9080
+              protocol: TCP
+            - name: https
+              containerPort: 9443
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 9080
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 9080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

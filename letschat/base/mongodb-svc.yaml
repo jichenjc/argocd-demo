@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    template.openshift.io/expose-uri: mongodb://{.spec.clusterIP}:{.spec.ports[?(.name=="mongodb")].port}
+  labels:
+    template: mongodb-ephemeral-template
+  name: mongodb
+spec:
+  ports:
+  - name: mongodb
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    name: mongodb
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

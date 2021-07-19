@@ -1,0 +1,5 @@
+resources:
+  - haproxy-configmap.yaml
+  - haproxy-deployment.yaml
+  - haproxy-clusterip-service.yaml
+  - route.yaml

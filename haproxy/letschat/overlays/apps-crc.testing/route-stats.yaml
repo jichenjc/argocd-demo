@@ -1,0 +1,25 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: proxy-stats
+  labels:
+    app: haproxy-lb
+    app.kubernetes.io/instance: sushi-proxy
+spec:
+  host: proxy-stats.apps-crc.testing
+  path: /stats
+  to:
+    kind: Service
+    name: haproxy-lb-service
+    weight: 100
+  port:
+    targetPort: stats
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: proxy-stats.apps-crc.testing
+      routerName: default
+      conditions:
+        - type: Admitted
+          status: 'True'
+      wildcardPolicy: None

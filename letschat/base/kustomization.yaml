@@ -1,0 +1,13 @@
+resources:
+  - namespace.yaml
+  - lets-chat-is.yaml
+  - lets-chat-bc.yaml
+  - lets-chat-dc.yaml
+  - lets-chat-svc.yaml
+  - lets-chat-route.yaml
+  - smee-is.yaml
+  - smee-dc.yaml
+  - smee-bc.yaml
+  - mongodb-dc.yaml
+  - mongodb-svc.yaml
+  - mongodb-secret.yaml

@@ -1,0 +1,30 @@
+apiVersion: v1
+items:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    name: smee
+  spec:
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+          argocd.argoproj.io/sync-options: Validate=false
+          argocd.argoproj.io/compare-options: IgnoreExtraneous,IgnoreDifference=/spec/containers/0/imag
+        labels:
+          app: smee
+          deploymentconfig: smee
+      spec:
+        containers:
+          - env:
+              - name: HTTPTARGET
+                value: https://kubernetes.default.svc/apis/build.openshift.io/v1/namespaces/sushi-devops/buildconfigs/sushiweb/webhooks/0ZicxhYChd2WrCL8V8GD/generic
+              - name: NODE_TLS_REJECT_UNAUTHORIZED
+                value: '0'
+              - name: SMEESOURCE
+                value: 'https://smee.io/vsNbOu9Hpa1oSts'
+            name: smee
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

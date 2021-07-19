@@ -1,0 +1,47 @@
+apiVersion: v1
+items:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      argocd.argoproj.io/sync-options: Validate=false
+      argocd.argoproj.io/compare-options: IgnoreExtraneous,IgnoreDifference=/status/lastVersion
+    labels:
+      app: lets-chat
+    name: lets-chat
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: lets-chat:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        uri: https://github.com/geoffrey-pascal/lets-chat.git
+        ref: 'dev'
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'nodejs:10'
+          namespace: openshift
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - github:
+        secret: e1ae3598ccaf1a76
+      type: GitHub
+    - generic:
+        secret: c774d695575dfa02
+      type: Generic
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

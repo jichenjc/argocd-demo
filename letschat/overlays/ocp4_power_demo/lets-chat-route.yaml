@@ -1,0 +1,9 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: lets-chat
+spec:
+  host: chat.10.3.10.50.nip.io
+status:
+  ingress:
+    - host: chat.10.3.10.50.nip.io

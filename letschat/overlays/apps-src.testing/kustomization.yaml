@@ -1,0 +1,6 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- lets-chat-route.yaml
+resources:
+- demo-rolebinding.yaml

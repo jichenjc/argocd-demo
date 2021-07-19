@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: booking
+spec:
+  gateways:
+  - acmeair-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /booking
+    route:
+    - destination:
+        host: acmeair-booking-service
+        port:
+          number: 9080

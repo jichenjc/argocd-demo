@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smee
+spec:
+  template:
+    spec:
+      containers:
+        - env:
+            - name: HTTPTARGET
+              value: https://kubernetes.default.svc/apis/build.openshift.io/v1/namespaces/sushi-devops/buildconfigs/sushiweb/webhooks/0ZicxhYChd2WrCL8V8GD/generic
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: '0'
+            - name: SMEESOURCE
+              value: 'https://smee.io/a4uHUbeuyYNRB1EA'
+          name: smee

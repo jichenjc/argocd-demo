@@ -1,0 +1,45 @@
+apiVersion: v1
+items:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      argocd.argoproj.io/sync-options: Validate=false
+      argocd.argoproj.io/compare-options: IgnoreExtraneous,IgnoreDifference=/status/lastVersion
+    labels:
+      app: haproxy-lb
+    name: haproxy-lb
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: haproxy:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        uri: https://github.com/schabrolles/haproxy-docker-alpine.git
+      contextDir: "2.1"
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: alpine:latest
+      type: Docker
+    triggers:
+    - github:
+        secret: EMLqpUdWOL7z5F_OKljN
+      type: GitHub
+    - generic:
+        secret: 0ZicxhYChd2WrCL8V8GD
+      type: Generic
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

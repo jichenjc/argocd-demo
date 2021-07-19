@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sushiweb
+spec:
+  host: hostnamehere
+  to:
+    kind: Service
+    name: sushiweb
+    weight: 100
+  port:
+    targetPort: http
+status:
+  ingress: []

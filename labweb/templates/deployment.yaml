@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+    spec:
+      affinity:
+      {{- include "nodeaffinity" . | indent 6 }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.secret }}"
+      containers:
+      - name: {{ template "fullname" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20 
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.port }}
+        # set liveness probe to determine if container needs to be restarted
+        # - command, http, or tcp
+        # ref : https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+        resources:
+{{ toYaml .Values.resources | indent 10 }}

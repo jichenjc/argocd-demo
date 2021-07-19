@@ -1,0 +1,15 @@
+apiVersion: v1
+items:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    name: sushiweb
+  spec:
+    source:
+      git:
+        ref: prod
+      type: Git
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

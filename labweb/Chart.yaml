@@ -1,0 +1,16 @@
+name: labweb
+description: nginx based lab web server
+version: "2.1"
+keywords:
+  - ppc64le
+  - webdemo
+  - demo 
+  - lab 
+  - http
+  - web
+  - apache
+icon: https://cdn3.iconfinder.com/data/icons/seo-flat-4/24/www-512.png
+maintainers:
+  - name: Sylvain Delabarre
+tillerVersion: ">=2.4.0"
+engine: gotpl

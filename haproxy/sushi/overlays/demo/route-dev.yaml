@@ -1,0 +1,23 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: sushi-dev
+  labels:
+    app: sushiweb-demo
+    app.kubernetes.io/instance: sushi-proxy
+spec:
+  host: dev.sushi-everywhere.10.3.3.60.nip.io
+  to:
+    kind: Service
+    name: sushi-proxy
+    weight: 100
+  port:
+    targetPort: 8080
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: dev.sushi-everywhere.10.3.3.60.nip.io
+      conditions:
+        - type: Admitted
+          status: 'True'
+      wildcardPolicy: None

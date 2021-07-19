@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/connects-to: '[{"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"{{ include "acmeair.fullname" . }}-customer-db"},{"apiVersion":"apps/v1","kind":"Deployment","name":"{{ include "acmeair.fullname" . }}-customer-db"}]'
+  name: {{ include "acmeair.fullname" . }}-customerservice
+  labels:
+    {{- include "acmeair.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      name: {{ include "acmeair.fullname" . }}-customer-deployment
+      {{- include "acmeair.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        name: {{ include "acmeair.fullname" . }}-customer-deployment
+        {{- include "acmeair.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "acmeair.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: acmeair-customerservice-java
+          env:
+            - name: ACMEAIR_STACKAA_AUTH_URL
+              value: http://{{ include "acmeair.fullname" . }}-auth-service:9080/auth
+            - name: SECURE_SERVICE_CALLS
+              value: "true"
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-admin-password
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+            - name: USER
+              value: admin
+            - name: MONGO_HOST
+              value: {{ include "acmeair.fullname" . }}-customer-db
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+            - name: MONGO_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.acmeairCustomer.image.repository }}:{{ .Values.acmeairCustomer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.acmeairCustomer.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9080
+              protocol: TCP
+            - name: https
+              containerPort: 9443
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 9080
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 9080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

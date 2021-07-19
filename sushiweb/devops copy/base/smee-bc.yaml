@@ -1,0 +1,51 @@
+apiVersion: v1
+items:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      argocd.argoproj.io/sync-options: Validate=false
+      argocd.argoproj.io/compare-options: IgnoreExtraneous,IgnoreDifference=/status/lastVersion
+    labels:
+      app: smee
+    name: smee
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: smee:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        uri: https://github.com/geoffrey-pascal/smeeclient-nodejs.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 'nodejs:10'
+          namespace: openshift
+      type: Source
+    failedBuildsHistoryLimit: 1
+    successfulBuildsHistoryLimit: 1
+    triggers:
+    - github:
+        secret: EMLqpUdWOL7z5F_OKljN
+      type: GitHub
+    - generic:
+        secret: 0ZicxhYChd2WrCL8V8GD
+      type: Generic
+    - type: GitLab
+      gitlab:
+        secretReference:
+          name: gitlabwebhooksecret
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

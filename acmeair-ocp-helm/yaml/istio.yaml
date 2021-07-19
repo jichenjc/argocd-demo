@@ -1,0 +1,113 @@
+kind: Gateway
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: acmeair-gw
+  labels:
+    kiali_wizard: Gateway
+spec:
+  servers:
+    - hosts:
+        - acmeair.10.3.66.60.nip.io
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+  selector:
+    istio: ingressgateway
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acmeair-main
+spec:
+  gateways:
+  - acmeair-gw
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /acmeair
+    route:
+    - destination:
+        host: acmeair-main-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acmeair-auth
+spec:
+  gateways:
+  - acmeair-gw
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /auth
+    route:
+    - destination:
+        host: acmeair-auth-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acmeair-booking
+spec:
+  gateways:
+  - acmeair-gw
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /booking
+    route:
+    - destination:
+        host: acmeair-booking-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acmeair-customer
+spec:
+  gateways:
+  - acmeair-gw
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /customer
+    route:
+    - destination:
+        host: acmeair-customer-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acmeair-flight
+spec:
+  gateways:
+  - acmeair-gw
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /flight
+    route:
+    - destination:
+        host: acmeair-flight-service
+        port:
+          number: 9080
+
+

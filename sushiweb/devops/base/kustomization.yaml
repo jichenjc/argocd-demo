@@ -1,0 +1,8 @@
+resources:
+  #- namespace.yaml
+  - sushi-is.yaml
+  - sushi-bc.yaml
+  - sushi-dc.yaml
+  - sushi-svc.yaml
+  - sushi-route.yaml
+  - smee-deploy.yaml

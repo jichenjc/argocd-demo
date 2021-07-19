@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: lets-chat
+spec:
+  host: chat.apps-crc.testing
+status:
+  ingress: 
+  - conditions:
+      - status: 'True'
+        type: Admitted
+    host: chat.apps-crc.testing
+    wildcardPolicy: None

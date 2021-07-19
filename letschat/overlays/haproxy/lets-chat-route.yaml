@@ -1,0 +1,9 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: lets-chat
+spec:
+  host: chat.proxy
+status:
+  ingress:
+    - host: chat.proxy

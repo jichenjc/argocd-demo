@@ -1,0 +1,114 @@
+{{- if .Values.istio.enabled }}
+kind: Gateway
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: {{ include "acmeair.fullname" . }}-gw
+  labels:
+    kiali_wizard: Gateway
+spec:
+  servers:
+    - hosts:
+        - {{ .Values.host }}
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+  selector:
+    istio: ingressgateway
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "acmeair.fullname" . }}-main
+spec:
+  gateways:
+  - {{ include "acmeair.fullname" . }}-gw
+  hosts:
+  - {{ .Values.host }}
+  http:
+  - match:
+    - uri:
+        prefix: /acmeair
+    route:
+    - destination:
+        host: {{ include "acmeair.fullname" . }}-main-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "acmeair.fullname" . }}-auth
+spec:
+  gateways:
+  - {{ include "acmeair.fullname" . }}-gw
+  hosts:
+  - {{ .Values.host }}
+  http:
+  - match:
+    - uri:
+        prefix: /auth
+    route:
+    - destination:
+        host: {{ include "acmeair.fullname" . }}-auth-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "acmeair.fullname" . }}-booking
+spec:
+  gateways:
+  - {{ include "acmeair.fullname" . }}-gw
+  hosts:
+  - {{ .Values.host }}
+  http:
+  - match:
+    - uri:
+        prefix: /booking
+    route:
+    - destination:
+        host: {{ include "acmeair.fullname" . }}-booking-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "acmeair.fullname" . }}-customer
+spec:
+  gateways:
+  - {{ include "acmeair.fullname" . }}-gw
+  hosts:
+  - {{ .Values.host }}
+  http:
+  - match:
+    - uri:
+        prefix: /customer
+    route:
+    - destination:
+        host: {{ include "acmeair.fullname" . }}-customer-service
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "acmeair.fullname" . }}-flight
+spec:
+  gateways:
+  - {{ include "acmeair.fullname" . }}-gw
+  hosts:
+  - {{ .Values.host }}
+  http:
+  - match:
+    - uri:
+        prefix: /flight
+    route:
+    - destination:
+        host: {{ include "acmeair.fullname" . }}-flight-service
+        port:
+          number: 9080
+{{- end }}
+

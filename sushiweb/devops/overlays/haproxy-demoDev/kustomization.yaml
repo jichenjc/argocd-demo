@@ -1,0 +1,8 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- route.yaml
+- smee-deploy.yaml
+resources:
+- rolebinding.yaml
+- namespace.yaml

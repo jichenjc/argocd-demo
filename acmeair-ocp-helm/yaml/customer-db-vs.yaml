@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: customer-db
+spec:
+  gateways:
+  - acmeair-gateway
+  hosts:
+  - 'acmeair-customer-db'
+  tcp:
+  - match:
+    - port: 27017
+    route:
+    - destination:
+        host: acmeair-customer-db
+        port:
+          number: 27017

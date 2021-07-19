@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "acmeair.fullname" . }}-main-service
+  labels:
+    {{- include "acmeair.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      name: {{ include "acmeair.fullname" . }}-main
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        name: {{ include "acmeair.fullname" . }}-main
+        app: main
+        app.kubernetes.io/name: main
+        app.kubernetes.io/version: {{ .Values.acmeairMain.image.tag }}
+        version: {{ .Values.acmeairMain.image.tag }}
+        app.kubernetes.io/part-of: {{ include "acmeair.fullname" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "acmeair.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: acmeair-authservice-java
+          env:
+            - name: USERNAME
+              value: admin
+            - name: PASSWORD
+              value: password
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.acmeairMain.image.repository }}:{{ .Values.acmeairMain.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.acmeairMain.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9080
+              protocol: TCP
+            - name: https
+              containerPort: 9443
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

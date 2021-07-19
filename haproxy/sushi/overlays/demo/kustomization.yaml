@@ -1,0 +1,11 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- haproxy-clusterip-service.yaml
+- route.yaml
+- haproxy-configmap.yaml
+resources:
+#- namespace.yaml
+- route-stats.yaml
+- route-dev.yaml
+- rolebinding.yaml

@@ -1,0 +1,9 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- route.yaml
+- smee-deploy.yaml
+- sushi-bc.yaml
+resources:
+- rolebinding.yaml
+- namespace.yaml

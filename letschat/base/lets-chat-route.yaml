@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: lets-chat
+spec:
+  host: lets-chat
+  to:
+    kind: Service
+    name: lets-chat
+    weight: 100
+  port:
+    targetPort: http
+status:
+  ingress: []

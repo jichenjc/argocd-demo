@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: customer
+spec:
+  gateways:
+  - acmeair-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /customer
+    route:
+    - destination:
+        host: acmeair-customer-service
+        port:
+          number: 9080

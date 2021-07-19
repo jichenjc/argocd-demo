@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sushi-prod
+spec:
+  host: sushi-everywhere.10.3.3.60.nip.io
+status:
+  ingress: 
+  - conditions:
+      - status: 'True'
+        type: Admitted
+    host: sushi-everywhere.10.3.3.60.nip.io
+    wildcardPolicy: None

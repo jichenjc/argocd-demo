@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sushiweb
+spec:
+  host: sushi.proxy
+status:
+  ingress: 
+  - conditions:
+      - status: 'True'
+        type: Admitted
+    host: sushi.proxy
+    wildcardPolicy: None

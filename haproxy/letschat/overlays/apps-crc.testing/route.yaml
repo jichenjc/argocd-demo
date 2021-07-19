@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: haproxy-lb
+spec:
+  host: chat-everywhere.apps-crc.testing
+status:
+  ingress: 
+  - conditions:
+      - status: 'True'
+        type: Admitted
+    host: chat-everywhere.apps-crc.testing
+    routerName: default
+    wildcardPolicy: None

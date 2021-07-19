@@ -1,0 +1,15 @@
+{{- if not .Values.istio.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "acmeair.fullname" . }}-main-route
+spec:
+  #host: {{ include "acmeair.fullname" . }}.apps.ocp4.demointel.mpl
+  host: {{ .Values.host }}  
+  path: /acmeair
+  to:
+    kind: Service
+    name: {{ include "acmeair.fullname" . }}-main-service
+    weight: 100
+  wildcardPolicy: None
+{{- end }}

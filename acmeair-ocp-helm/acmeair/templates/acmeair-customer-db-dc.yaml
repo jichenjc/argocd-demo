@@ -1,0 +1,122 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ include "acmeair.fullname" . }}-customer-db
+  labels:
+    {{- include "acmeair.labels" . | nindent 4 }}
+  {{- with .Values.mongodb.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    name: {{ include "acmeair.fullname" . }}-customer-db
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        name: {{ include "acmeair.fullname" . }}-customer-db
+        app.kubernetes.io/name: customer-db
+        app: customer-db
+        app.kubernetes.io/version: "{{ .Values.mongodb.image.tag }}"
+        version: "{{ .Values.mongodb.image.tag }}"
+        app.kubernetes.io/part-of: {{ include "acmeair.fullname" . }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "acmeair.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mongodb
+          env:
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+            - name: MONGODB_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-admin-password
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+            - name: MONGODB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: {{ include "acmeair.fullname" . }}-customer-db
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 27017
+            timeoutSeconds: 1
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                --eval="quit()"
+            failureThreshold: 3
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /var/lib/mongodb/data
+            name: acmeair-customer-db-data
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: acmeair-customer-db-data
+        emptyDir:
+          medium: Memory
+  test: false
+  triggers:
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - mongodb
+      from:
+        kind: ImageStreamTag
+        name: mongodb:3.6
+        namespace: openshift
+    type: ImageChange
+  - type: ConfigChange

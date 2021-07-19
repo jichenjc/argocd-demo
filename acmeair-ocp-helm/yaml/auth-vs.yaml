@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: auth
+spec:
+  gateways:
+  - acmeair-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /auth
+    route:
+    - destination:
+        host: acmeair-auth-service
+        port:
+          number: 9080
