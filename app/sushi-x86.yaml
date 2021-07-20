@@ -14,7 +14,7 @@ spec:
   # Source of the application manifests
   source:
     repoURL: https://gitlab.com/schabrolles/argocd-demo.git
-    targetRevision: HEAD
+    targetRevision: master
     path: sushiweb/devops/overlays/haproxy-demoX86
 
   # Destination cluster and namespace to deploy the application
