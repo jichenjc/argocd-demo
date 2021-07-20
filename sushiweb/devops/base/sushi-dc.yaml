@@ -12,7 +12,7 @@ items:
       app: sushiweb
     name: sushiweb
   spec:
-    replicas: 2
+    replicas: 3
     revisionHistoryLimit: 1
     selector:
       app: sushiweb
