@@ -19,10 +19,10 @@ spec:
 
   # Destination cluster and namespace to deploy the application
   destination:
-    name: OCP4_x86_SR650
+    #name: OCP4_x86_SR650
     #name: in-cluster
-    #server: https://kubernetes.default.svc
-    server: ''
+    server: https://kubernetes.default.svc
+    #server: ''
     namespace: sushi-devops
 
   # Sync policy
