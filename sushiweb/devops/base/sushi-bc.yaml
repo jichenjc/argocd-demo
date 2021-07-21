@@ -20,7 +20,7 @@ items:
     runPolicy: Serial
     source:
       git:
-        uri: https://gitlab.com/schabrolles/sushiweb.git
+        uri: https://github.com/jichenjc/sushiweb
       type: Git
     strategy:
       dockerStrategy:
